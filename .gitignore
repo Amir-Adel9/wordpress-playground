@@ -1,0 +1,15 @@
+wp-content/plugins
+
+wp-config.php
+
+wp-content/uploads
+wp-content/**/node_modules
+
+
+.htaccess
+*.log
+*.mo
+**/i18n/languages
+wp-content/plugins/query-monitor/
+wp-content/plugins/show-hooks/
+wp-content/db.php
