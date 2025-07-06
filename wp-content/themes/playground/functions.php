@@ -32,6 +32,9 @@ function playground_enqueue_assets()
             }
         }
     }
+
+    // ✅ Always enqueue external packages
+    playground_enqueue_packages();
 }
 add_action('wp_enqueue_scripts', 'playground_enqueue_assets');
 
@@ -41,41 +44,40 @@ add_action('wp_enqueue_scripts', 'playground_enqueue_assets');
 function playground_register_dev_scripts()
 {
     wp_register_script('vite-client', 'http://localhost:5173/@vite/client', [], null, true);
-    wp_register_script('main-js',    'http://localhost:5173/js/main.js',    [], null, true);
+    wp_register_script('main-js', 'http://localhost:5173/js/main.js', [], null, true);
 }
 
+/**
+ * Parse Vite manifest for production asset paths.
+ */
 function playground_get_assets_from_manifest($asset_name)
 {
     static $manifest = null;
 
     if ($manifest === null) {
         $manifest_path = get_template_directory() . '/dist/.vite/manifest.json';
-        if (!file_exists($manifest_path)) {
+        if (! file_exists($manifest_path)) {
             return null;
         }
         $manifest = json_decode(file_get_contents($manifest_path), true);
     }
 
-    if (!isset($manifest[$asset_name])) {
+    if (! isset($manifest[$asset_name])) {
         return null;
     }
 
-    error_log("Asset found in manifest: $asset_name");
-    $entry = $manifest[$asset_name];
-
-    $js_file = $entry['file'] ?? null;
+    $entry     = $manifest[$asset_name];
+    $js_file   = $entry['file'] ?? null;
     $css_files = $entry['css'] ?? [];
 
     return [
-        'js' => $js_file,
+        'js'  => $js_file,
         'css' => $css_files,
     ];
 }
 
-
-
 /**
- * Modify script tags to include type="module" where needed.
+ * Add `type="module"` to certain script tags.
  */
 function playground_add_module_type($tag, $handle)
 {
@@ -88,3 +90,26 @@ function playground_add_module_type($tag, $handle)
     return $tag;
 }
 add_filter('script_loader_tag', 'playground_add_module_type', 10, 2);
+
+/**
+ * ✅ Enqueue external JS packages from CDNs
+ */
+function playground_enqueue_packages()
+{
+    // GSAP
+    wp_enqueue_script(
+        'gsap',
+        'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js',
+        [],
+        null,
+        true
+    );
+    // GSAP SplitText
+    wp_enqueue_script(
+        'splittext-gsap',
+        'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js',
+        [],
+        null,
+        true
+    );
+}
