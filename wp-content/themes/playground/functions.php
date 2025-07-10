@@ -106,8 +106,15 @@ function playground_enqueue_packages()
     );
     // GSAP SplitText
     wp_enqueue_script(
-        'splittext-gsap',
+        'gsap-splittext',
         'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js',
+        [],
+        null,
+        true
+    );
+    wp_enqueue_script(
+        'gsap-scroll-trigger',
+        'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js',
         [],
         null,
         true
